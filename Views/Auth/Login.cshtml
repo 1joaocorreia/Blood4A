@@ -1,0 +1,28 @@
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<link rel="stylesheet" href="~/css/login.css">
+
+<main>
+    <div class="login-forms">
+        <div class="left-part">
+            <form>
+                <h1>Blood4A - Portal de Login</h1>
+
+                <label for="email-input">Login:</label>
+                <input type="email" id="email-input" placeholder="Enter your email here...">
+                
+                <label for="password-input">Password:</label>
+                <input type="password" id="password-input" placeholder="Enter your password here...">
+                
+                <button type="submit">ENTRAR</button>
+            </form>
+            <p>Ou <a asp-controller="Auth" asp-action="Cadastro">clique aqui</a> para se cadastrar</p>
+        </div>
+        <div class="right-part">
+            <img src="~/images/campanha_doe_sangue.png" alt="Imagem sobre uma campanha de doação de sangue incentivando os doadores a salvar mais vidas">
+        </div>
+    </div>
+</main>
