@@ -1,0 +1,38 @@
+h1 {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+
+div.superior {
+    margin: auto;
+    text-align: center;
+}
+
+div.estado {
+    border: 2px solid black;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+div.clinic_card {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border: 2px solid darkred;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+div.clinic_card .left {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+div.clinic_card .right {
+    margin: auto;
+    text-align: center;
+}

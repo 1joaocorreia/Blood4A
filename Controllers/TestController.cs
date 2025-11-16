@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Blood4A.Controllers;
 
+[Route("[controller]")]
 public class TestController(ApplicationDbContext db) : Controller
 {
     private ApplicationDbContext _db = db;

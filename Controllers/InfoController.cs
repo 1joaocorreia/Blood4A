@@ -25,11 +25,10 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         }
 
         var horarios = await _db.AberturaFechamento
-            .Include(horario => horario.obj_referente_a)
-            .Where(entity => entity.referente_a == specific_clinic.id_clinica)
-            .ToArrayAsync();
+        .Where(horario => horario.referente_a == clinic_id)
+        .ToArrayAsync();
 
-        var model = new ClinicaInfoViewModel(specific_clinic, horarios);
+        var model = new ClinicaInfoViewModel(specific_clinic, horarios.ToArray());
         
         return Ok(model);
     }
@@ -73,12 +72,50 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
 
     }
 
-    [HttpGet("get_all_clinics")]
-    public IActionResult GetAllClinics()
+    [HttpGet("get_all_clinics/")]
+    public async Task<IActionResult> GetAllClinics()
     {
+        List<ClinicasEstado> clinicas_por_estado = new List<ClinicasEstado>();
+
+        Clinicas[] all_clinics = await _db.Clinicas
+        .Include(clinic => clinic.obj_cep_location)
+        .ToArrayAsync();
+
+        int all_clinics_length = all_clinics.Length;
         
-        // TODO: Implement this
-        return NotFound(new {message="Not implemented yet"});
+        if (all_clinics_length == 0)
+        {
+            return NotFound("Nenhuma clinica encontrada");
+        }
+
+        
+        for (int i = 0; i < all_clinics_length; i++)
+        {
+            Clinicas current_clinic = all_clinics[i];
+            if (current_clinic.obj_cep_location == null)
+            {
+                continue; // Não tem localização
+            }
+
+            // Checando se o código dessa clínica ja existe na lista
+            ClinicasEstado? match = clinicas_por_estado.FirstOrDefault(c_estado => c_estado.Estado.Equals(current_clinic.obj_cep_location.estado, StringComparison.CurrentCultureIgnoreCase));
+            if (match == null)
+            {
+                // Criar um novo ClinicaEstado
+                ClinicasEstado created_clinica_estado = new ClinicasEstado(current_clinic.obj_cep_location.estado, "");
+                created_clinica_estado.ListaDeClinicas.Add(current_clinic);
+
+                clinicas_por_estado.Add(created_clinica_estado);
+                continue;
+            } else
+            {
+                // Adicionar a clinica nesse ClinicaEstado
+                match.ListaDeClinicas.Add(current_clinic);
+                continue;
+            }
+        }
+
+        return Ok( new { clinicas_por_estado } );
 
     }
 

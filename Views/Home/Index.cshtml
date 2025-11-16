@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Pagina Principal";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/home/index.css">
+}
+
+<div>
+    <div class="superior">
+        <h1>Dados de Cada Instituição de Coleta</h1>
+        <p>Ordenados por Estado</p>
+    </div>
+</div>
+<main id="clinics_container"></main>
+
+@section Scripts {
+    <script src="~/js/home/load_institutions.js"></script>
+}

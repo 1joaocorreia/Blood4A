@@ -1,12 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 
 namespace Blood4A.Domain;
 
 public class AberturaFechamento
 {
     // FK -----------------------------------------------   
-    [System.ComponentModel.DataAnnotations.Key]
+    [Required]
     public int referente_a { get; set; }
     // FK -----------------------------------------------   
 
@@ -14,6 +14,7 @@ public class AberturaFechamento
 
     public required string horario_fechamento { get; set; }
 
+    [Required]
     public required string dia_da_semana { get; set; }
 
     // FK -----------------------------------------------    

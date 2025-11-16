@@ -10,6 +10,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     // TODO: Adicionar os DbSet<> para obter queries to banco de dados para
     // Domain Models especificas
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AberturaFechamento>().HasKey(table => new
+        {
+            table.referente_a, table.dia_da_semana
+        });
+    }
+
     public DbSet<AberturaFechamento> AberturaFechamento { get; set; }
     public DbSet<Agentes> Agentes { get; set; }
     public DbSet<Clinicas> Clinicas { get; set; }
