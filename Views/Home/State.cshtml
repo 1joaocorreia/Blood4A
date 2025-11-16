@@ -1,0 +1,31 @@
+@{
+    ViewData["Title"] = "Informações sobre Estado";
+}
+
+@model StateInfoViewModel;
+
+<div class="main">
+    <div class="header">
+        <h1>@Model.Estado</h1>
+    </div>
+    <div class="content">
+        <h1 style="font-size: 30px;">Clinicas localizadas neste estado:</h1>
+        <ul class="list-group">
+            @foreach (var clinica in @Model.ListaDeClinicas)
+            {
+                <li class="list-group-item">
+                    <a href="http://localhost:5213/Home/Clinic/@clinica.id_clinica">@clinica.nome_clinica</a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="donation_statistics">
+        <canvas id="donations_chart" style="width:100%;"></canvas>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+    <script src="~/js/state/load_donations.js"></script>
+}

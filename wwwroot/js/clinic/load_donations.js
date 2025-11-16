@@ -18,7 +18,7 @@ async function carregar_grafico() {
 
     if (canvas_chart == null) {
         $("div.donation_statistics").append(generate_bootstrap_error_card(
-            "Não foi possivel obter os dados de doações desta respectiva clínica"
+            "Um erro interno ocorreu. Não foi possivel carregar o gráfico de doações mensais"
         ));
         return;
     }

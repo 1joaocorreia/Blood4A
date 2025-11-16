@@ -72,6 +72,45 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
 
     }
 
+    [HttpGet("state_donations/{estado}")]
+    public async Task<IActionResult> GetStateDonations(string estado)
+    {
+        
+        Doacoes[] doacoes = await _db.Doacoes
+            .Include(doacao => doacao.obj_id_clinica)
+            .Include(doacao => doacao.obj_id_clinica.obj_cep_location)
+            .Where(doacao => doacao.obj_id_clinica.obj_cep_location.estado.ToLower() == estado.ToLower())
+            .ToArrayAsync();
+        
+        if (doacoes.Length == 0)
+        {
+            return NotFound(new { message = $"Nenhuma doação encontrada para a clinica < {estado} >" });
+        }
+
+        Meses[] meses_do_ano = Enum.GetValues<Meses>();
+        
+        DoacaoMes[] doacoes_por_mes = new DoacaoMes[12];
+        for (var i = 0; i < 12; i++)
+        {
+            doacoes_por_mes[i] = new DoacaoMes(meses_do_ano[i], 0);
+        }
+
+        foreach (var doacao in doacoes)
+        {
+            try
+            {
+                var mes = doacao.data_doacao.Split("/")[1];
+                doacoes_por_mes[Int32.Parse(mes) - 1].QuantidadeDeDoacoes+=1;
+            } catch (Exception)
+            {
+                continue;
+            }
+        }
+
+        return Ok(new StateDonationsViewModel(estado, doacoes_por_mes));
+
+    }
+
     [HttpGet("get_all_clinics/")]
     public async Task<IActionResult> GetAllClinics()
     {

@@ -6,10 +6,6 @@ namespace Blood4A.Infrastructure;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-
-    // TODO: Adicionar os DbSet<> para obter queries to banco de dados para
-    // Domain Models especificas
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AberturaFechamento>().HasKey(table => new

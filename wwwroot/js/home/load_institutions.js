@@ -34,7 +34,7 @@ class Horario {
 function create_new_estado_category(estado) {
     return `
     <div class="estado" id="${estado.toLowerCase()}">
-        <h1>Estado < ${estado} ></h1>
+        <h1><a href="${rootaddress}/home/state/${estado}">Estado < ${estado} ></a></h1>
     </div>
     `
 }

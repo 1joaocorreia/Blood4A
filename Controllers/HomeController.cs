@@ -56,4 +56,22 @@ public class HomeController(ApplicationDbContext db) : Controller
         return View(new ClinicaInfoViewModel(clinica, horarios));
 
     }
+
+    [HttpGet("state/{estado}")]
+    public async Task<IActionResult> State(string estado)
+    {
+        
+        Clinicas[] clinicas = await _db.Clinicas
+        .Include(clinica => clinica.obj_cep_location)
+        .Where(clinica => clinica.obj_cep_location.estado.ToLower() == estado.ToLower())
+        .ToArrayAsync();
+
+        if (clinicas.Length == 0)
+        {
+            return NotFound( new { message = $"Estado < {estado} > encontrado" } );
+        }
+
+        return View( new StateInfoViewModel(estado, clinicas) );
+
+    }
 }

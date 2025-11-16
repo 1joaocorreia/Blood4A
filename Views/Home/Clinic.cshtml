@@ -23,10 +23,9 @@
                 <p>CEP: @Model.Clinica.obj_cep_location.cep</p>
                 <p>Bairro: @Model.Clinica.obj_cep_location.bairro</p>
                 <p>Cidade: @Model.Clinica.obj_cep_location.cidade</p>
-                <p>Estado: @Model.Clinica.obj_cep_location.estado</p>
+                <p><a href="http://localhost:5213/home/state/@Model.Clinica.obj_cep_location.estado">Estado: @Model.Clinica.obj_cep_location.estado<a/></p>
             </div>
         </div>
-        <div class="metas"></div>
     </div>
     <div class="donation_statistics">
         <canvas id="donations_chart" style="width:100%;"></canvas>
@@ -35,5 +34,5 @@
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
-    <script src="~/js/home/load_donations.js"></script>
+    <script src="~/js/clinic/load_donations.js"></script>
 }

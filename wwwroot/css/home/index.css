@@ -36,3 +36,7 @@ div.clinic_card .right {
     margin: auto;
     text-align: center;
 }
+
+div.clinic_card .right a {
+    width: 100%;
+}
