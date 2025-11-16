@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Clinic Info";
+}
+
+@model ClinicaInfoViewModel;
+
+<div class="main">
+    <div class="header">
+        <h1 id="clinic_title">@Model.Clinica.nome_clinica</h1>
+    </div>
+    <div class="content">
+        <div class="horarios">
+            <h2>Horários:</h2>
+            @foreach (var horario in @Model.Horarios) {
+                <div class="horario">
+                    <p>@horario.dia_da_semana: @horario.horario_abertura - @horario.horario_fechamento</p>
+                </div>
+            }
+        </div>
+        <div class="locations">
+            <h2>Localização:</h2>
+            <div>
+                <p>CEP: @Model.Clinica.obj_cep_location.cep</p>
+                <p>Bairro: @Model.Clinica.obj_cep_location.bairro</p>
+                <p>Cidade: @Model.Clinica.obj_cep_location.cidade</p>
+                <p>Estado: @Model.Clinica.obj_cep_location.estado</p>
+            </div>
+        </div>
+        <div class="metas"></div>
+    </div>
+    <div class="donation_statistics">
+        <canvas id="donations_chart" style="width:100%;"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+    <script src="~/js/home/load_donations.js"></script>
+}

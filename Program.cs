@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Blood4A.Data;
+using Blood4A.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 var app = builder.Build();
+
 
 // 🔹 Chamada ao SeedData
 using (var scope = app.Services.CreateScope())

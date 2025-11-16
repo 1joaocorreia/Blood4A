@@ -7,18 +7,18 @@
 <h1>Pagina de Testes do Banco de Dados</h1>
 <hr>
 <main>
-    <h2>Clínica <b>@Model.doacao.obj_id_clinica.Nome_Clinica</b></h2>
+    <h2>Clínica <b>@Model.Doacao.obj_id_clinica.nome_clinica</b></h2>
     <ul class="list-group">
-        <li class="list-group-item">ID da Doação: @Model.doacao.Id_Doacao</li>
-        <li class="list-group-item">Doador: <b>@Model.doacao.obj_id_doador.Nome_Doador</b></li>
-        <li class="list-group-item">Data da Doação: @Model.doacao.Data_Doacao</li>
-        <li class="list-group-item">Tipo Sanguíneo: @Model.doacao.obj_id_doador.Tipo_Sanguineo_Doador</li>
-        <li class="list-group-item">Telefone: @Model.doacao.obj_id_doador.Telefone_Doador</li>
-        <li class="list-group-item">Grau de Escolaridade do Sr.(a) @Model.doacao.obj_id_doador.Nome_Doador: @Model.doacao.obj_id_doador.obj_id_escolaridade.Grau_Escolaridade</li>
+        <li class="list-group-item">ID da Doação: @Model.Doacao.id_doacao</li>
+        <li class="list-group-item">Doador: <b>@Model.Doacao.obj_id_doador.nome_doador</b></li>
+        <li class="list-group-item">Data da Doação: @Model.Doacao.data_doacao</li>
+        <li class="list-group-item">Tipo Sanguíneo: @Model.Doacao.obj_id_doador.tipo_sanguineo_doador</li>
+        <li class="list-group-item">Telefone: @Model.Doacao.obj_id_doador.telefone_doador</li>
+        <li class="list-group-item">Grau de Escolaridade do Sr.(a) @Model.Doacao.obj_id_doador.nome_doador: @Model.Doacao.obj_id_doador.obj_id_escolaridade.grau_escolaridade</li>
         <br>
-        <li class="list-group-item">Agente que atendeu o sr(a) @Model.doacao.obj_id_doador.Nome_Doador: <b>@Model.doacao.obj_id_agente.Nome_Agente</b></li>
+        <li class="list-group-item">Agente que atendeu o sr(a) @Model.Doacao.obj_id_doador.nome_doador: <b>@Model.Doacao.obj_id_agente.nome_agente</b></li>
         <br>
-        <li class="list-group-item">Local da Doação: @Model.doacao.obj_id_clinica.obj_cep_location.Bairro, @Model.doacao.obj_id_clinica.obj_cep_location.Cidade, @Model.doacao.obj_id_clinica.obj_cep_location.Estado</li>
+        <li class="list-group-item">Local da Doação: @Model.Doacao.obj_id_clinica.obj_cep_location.bairro, @Model.Doacao.obj_id_clinica.obj_cep_location.cidade, @Model.Doacao.obj_id_clinica.obj_cep_location.estado</li>
     </ul>
     <br>
     <a class="btn btn-success" asp-controller="Auth" asp-action="Login">Retorne a pagina de Login</a>

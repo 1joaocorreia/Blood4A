@@ -1,19 +1,15 @@
-using Blood4A.Data;
+using Blood4A.Infrastructure;
+using Blood4A.Domain;
 using Blood4A.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blood4A.Controllers;
 
-public class TestController : Controller
+[Route("[controller]")]
+public class TestController(ApplicationDbContext db) : Controller
 {
-
-    private ApplicationDbContext _db;
-
-    public TestController(ApplicationDbContext db)
-    {
-        _db = db;
-    }
+    private ApplicationDbContext _db = db;
 
     [HttpGet]
     public IActionResult Database()
@@ -27,7 +23,7 @@ public class TestController : Controller
         .First<Doacoes>();
         if (primeira_doacao == null)
         {
-            throw new OperationCanceledException("Nenhuma doação encontrada");
+            return NotFound(new { message = "Nenhuma doação encontrada" });
         }
 
         DatabaseViewModel model = new DatabaseViewModel(primeira_doacao);

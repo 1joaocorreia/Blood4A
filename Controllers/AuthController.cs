@@ -1,29 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Blood4A.Models;
 using System.Diagnostics;
 
 namespace Blood4A.Controllers;
 
-public class AuthController : Controller
+[Route("[controller]")]
+public class AuthController(ILogger<AuthController> logger) : Controller
 {
-
-    private readonly ILogger<AuthController> _logger;
-
-    public AuthController(ILogger<AuthController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<AuthController> _logger = logger;
 
     [HttpGet]
+    public IActionResult Index()
+    {
+        return RedirectToAction("Login", "Auth");
+    }
+
+    [HttpGet("Login/")]
     public IActionResult Login()
     {
         return View();
     }
 
-    [HttpGet]
-    public IActionResult Cadastro()
+    [HttpPost("Login/")]
+    public IActionResult Login(LoginViewModel model)
     {
+        if (ModelState.IsValid)
+        {
+            if (model.Login.Equals("admin@hotmail.com", StringComparison.CurrentCultureIgnoreCase) && model.Password.Equals("admin", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
         return View();
     }
 

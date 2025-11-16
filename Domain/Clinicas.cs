@@ -1,21 +1,22 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Blood4A.Models;
+
+namespace Blood4A.Domain;
 
 public class Clinicas
 {
     [System.ComponentModel.DataAnnotations.Key]
-    public int Id_Clinica { get; set; }
+    public int id_clinica { get; set; }
 
-    public string Nome_Clinica { get; set; }
+    public required string nome_clinica { get; set; }
 
-    public string Cnpj_Clinica { get; set; }
+    public required string cnpj_clinica { get; set; }
     
     // FK -----------------------------------------------
-    public string cep_location { get; set; }
+    public required string cep_location { get; set; }
     
     [ForeignKey("cep_location")]
-    public Localizacoes obj_cep_location { get; set; }
+    public Localizacoes? obj_cep_location { get; set; }
     // FK -----------------------------------------------
 
 }
