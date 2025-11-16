@@ -1,0 +1,21 @@
+@model IEnumerable<Blood4A.Models.Clinicas>
+
+<h2>Lista de Clínicas</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>CNPJ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var clinica in Model)
+        {
+            <tr>
+                <td>@clinica.Nome_Clinica</td>
+                <td>@clinica.Cnpj_Clinica</td>
+            </tr>
+        }
+    </tbody>
+</table>
