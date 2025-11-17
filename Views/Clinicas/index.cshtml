@@ -1,4 +1,4 @@
-@model IEnumerable<Blood4A.Models.Clinicas>
+@model IEnumerable<Blood4A.Domain.Clinicas>
 
 <h2>Lista de Clínicas</h2>
 
@@ -13,8 +13,8 @@
         @foreach (var clinica in Model)
         {
             <tr>
-                <td>@clinica.Nome_Clinica</td>
-                <td>@clinica.Cnpj_Clinica</td>
+                <td>@clinica.nome_clinica</td>
+                <td>@clinica.cnpj_clinica</td>
             </tr>
         }
     </tbody>

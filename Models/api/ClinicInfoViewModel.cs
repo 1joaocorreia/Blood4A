@@ -2,8 +2,8 @@ using Blood4A.Domain;
 
 namespace Blood4A.Models;
 
-public class ClinicaInfoViewModel(Clinicas Clinica, AberturaFechamento[] Horarios)
+public class ClinicaInfoViewModel()
 {
-    public Clinicas Clinica { get; set; } = Clinica;
-    public AberturaFechamento[] Horarios { get; set; } = Horarios;
+    public required Clinicas Clinica { get; set; }
+    public required AberturaFechamento[] Horarios { get; set; }
 }

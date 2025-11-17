@@ -18,15 +18,15 @@ public enum Meses
     Dezembro
 }
 
-public class DoacaoMes(Meses Mes, int QuantidadeDeDoacoes)
+public class DoacaoMes()
 {
-    public Meses Mes { get; set; } = Mes;
-    public int QuantidadeDeDoacoes { get; set; } = QuantidadeDeDoacoes;
+    public Meses Mes { get; set; }
+    public int QuantidadeDeDoacoes { get; set; }
 }
 
-public class ClinicaDonationsViewModel(DoacaoMes[] DoacoesPorMes, Clinicas ClinicaAlvo)
+public class ClinicaDonationsViewModel()
 {
 
-    public DoacaoMes[] DoacoesPorMes { get; set; } = DoacoesPorMes;
-    public Clinicas ClinicaAlvo { get; set; } = ClinicaAlvo;
+    public required DoacaoMes[] DoacoesPorMes { get; set; }
+    public required Clinicas ClinicaAlvo { get; set; }
 }

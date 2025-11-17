@@ -1,8 +1,8 @@
 using Blood4A.Domain;
 
-public class StateInfoViewModel (string Estado, Clinicas[] ListaDeClinicas)
+public class StateInfoViewModel ()
 {
-    public string Estado {get; set;} = Estado;
-    public Clinicas[] ListaDeClinicas {get; set;} = ListaDeClinicas;
+    public required string Estado {get; set;}
+    public required Clinicas[] ListaDeClinicas {get; set;}
 
 }

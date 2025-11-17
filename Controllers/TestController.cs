@@ -26,7 +26,7 @@ public class TestController(ApplicationDbContext db) : Controller
             return NotFound(new { message = "Nenhuma doação encontrada" });
         }
 
-        DatabaseViewModel model = new DatabaseViewModel(primeira_doacao);
+        DatabaseViewModel model = new DatabaseViewModel { Doacao = primeira_doacao };
         
         return View(model);
     }

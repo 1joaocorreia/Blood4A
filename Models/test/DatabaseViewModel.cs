@@ -2,7 +2,7 @@ using Blood4A.Domain;
 
 namespace Blood4A.Models;
 
-public class DatabaseViewModel(Doacoes Doacao)
+public class DatabaseViewModel()
 {
-    public Doacoes Doacao { get; set; } = Doacao;
+    public required Doacoes Doacao { get; set; }
 }

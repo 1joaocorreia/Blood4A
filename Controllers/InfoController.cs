@@ -28,7 +28,11 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         .Where(horario => horario.referente_a == clinic_id)
         .ToArrayAsync();
 
-        var model = new ClinicaInfoViewModel(specific_clinic, horarios.ToArray());
+        var model = new ClinicaInfoViewModel()
+        {
+            Clinica = specific_clinic,
+            Horarios = horarios.ToArray()
+        };
         
         return Ok(model);
     }
@@ -56,7 +60,10 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         DoacaoMes[] doacoes_por_meses = new DoacaoMes[12];
         for (int i = 0; i < 12; i++)
         {
-            doacoes_por_meses[i] = new DoacaoMes(meses_do_ano[i], 0);
+            doacoes_por_meses[i] = new DoacaoMes{
+                Mes = meses_do_ano[i],
+                QuantidadeDeDoacoes = 0
+            };
         }
 
         foreach (var doacao in doacoes) {
@@ -68,7 +75,7 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
             }
         }
 
-        return Ok( new ClinicaDonationsViewModel(doacoes_por_meses, target_clinica) );
+        return Ok( new ClinicaDonationsViewModel { DoacoesPorMes = doacoes_por_meses, ClinicaAlvo = target_clinica} );
 
     }
 
@@ -92,7 +99,7 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         DoacaoMes[] doacoes_por_mes = new DoacaoMes[12];
         for (var i = 0; i < 12; i++)
         {
-            doacoes_por_mes[i] = new DoacaoMes(meses_do_ano[i], 0);
+            doacoes_por_mes[i] = new DoacaoMes { Mes = meses_do_ano[i], QuantidadeDeDoacoes = 0 };
         }
 
         foreach (var doacao in doacoes)
@@ -107,7 +114,7 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
             }
         }
 
-        return Ok(new StateDonationsViewModel(estado, doacoes_por_mes));
+        return Ok(new StateDonationsViewModel { Estado = estado, DoacoesPorMes = doacoes_por_mes } );
 
     }
 
@@ -141,7 +148,7 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
             if (match == null)
             {
                 // Criar um novo ClinicaEstado
-                ClinicasEstado created_clinica_estado = new ClinicasEstado(current_clinic.obj_cep_location.estado, "");
+                ClinicasEstado created_clinica_estado = new ClinicasEstado { Estado = current_clinic.obj_cep_location.estado, ListaDeClinicas = new List<Clinicas>()};
                 created_clinica_estado.ListaDeClinicas.Add(current_clinic);
 
                 clinicas_por_estado.Add(created_clinica_estado);

@@ -2,14 +2,14 @@ using Blood4A.Domain;
 
 namespace Blood4A.Models;
 
-public class ClinicasEstado(string Estado, string EstadoCode)
+public class ClinicasEstado()
 {
-    public string Estado { get; set; } = Estado;
-    public string EstadoCode { get; set; } = EstadoCode;
-    public List<Clinicas> ListaDeClinicas { get; set; } = [];
+    public required string Estado { get; set; }
+    public string? EstadoCode { get; set; }
+    public required List<Clinicas> ListaDeClinicas { get; set; }
 }
 
-public class AllClinicsViewModel(ClinicasEstado[] ClinicasEstados)
+public class AllClinicsViewModel()
 {
-    public ClinicasEstado[] ClinicasEstado { get; set; } = ClinicasEstados;
+    public required ClinicasEstado[] ClinicasEstado { get; set; }
 }

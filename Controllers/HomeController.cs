@@ -53,7 +53,7 @@ public class HomeController(ApplicationDbContext db) : Controller
             ).ToArray();
         }
 
-        return View(new ClinicaInfoViewModel(clinica, horarios));
+        return View(new ClinicaInfoViewModel { Clinica = clinica, Horarios = horarios });
 
     }
 
@@ -71,7 +71,7 @@ public class HomeController(ApplicationDbContext db) : Controller
             return NotFound( new { message = $"Estado < {estado} > encontrado" } );
         }
 
-        return View( new StateInfoViewModel(estado, clinicas) );
+        return View( new StateInfoViewModel { Estado = estado, ListaDeClinicas = clinicas } );
 
     }
 }
