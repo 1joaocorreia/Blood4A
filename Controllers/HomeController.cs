@@ -1,8 +1,7 @@
-using Blood4A.Domain;
+using System.Text.Json;
 using Blood4A.Infrastructure;
 using Blood4A.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Blood4A.Controllers;
 
@@ -10,6 +9,8 @@ namespace Blood4A.Controllers;
 public class HomeController(ApplicationDbContext db) : Controller
 {
     private readonly ApplicationDbContext _db = db;
+    private readonly HttpClient client = new HttpClient() { BaseAddress = new Uri("http://localhost:5213") };
+    private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
     [HttpGet]
     public IActionResult Index()
@@ -23,37 +24,23 @@ public class HomeController(ApplicationDbContext db) : Controller
     public async Task<IActionResult> Clinic(int clinic_id)
     {
 
-        Clinicas? clinica = await _db.Clinicas
-        .Include(clinica => clinica.obj_cep_location)
-        .FirstOrDefaultAsync(clinica => clinica.id_clinica == clinic_id);
-
-        if (clinica == null)
+        var response = await client.GetAsync($"/api/info/clinic_data/{clinic_id}");
+        if (! response.IsSuccessStatusCode)
         {
-            return NotFound( new { message = $"Clinic with id < {clinic_id} > not found" } );
+            return (IActionResult)Results.InternalServerError(new { message =  "Não foi possivel obter os dados da clinica especificada"});
         }
 
-        AberturaFechamento[] horarios = await _db.AberturaFechamento
-        .Where(horario => horario.referente_a == clinic_id)
-        .ToArrayAsync();
+        ClinicaInfoViewModel? model = JsonSerializer.Deserialize<ClinicaInfoViewModel>(
+            await response.Content.ReadAsStringAsync(),
+            jsonOptions
+        );
 
-        if (horarios.Length != 0)
+        if (model == null)
         {
-            var ordem = new Dictionary<string, int>
-            {
-                ["segunda feira"] = 1,
-                ["terca feira"] = 2,
-                ["terça feira"] = 2,
-                ["quarta feira"] = 3,
-                ["quinta feira"] = 4,
-                ["sexta feira"] = 5,
-            };
-
-            horarios = horarios.OrderBy(
-                x => ordem[x.dia_da_semana.Trim().ToLower()]
-            ).ToArray();
+            return (IActionResult)Results.InternalServerError( new { message = "Não foi possivel deserializar a resposta obtida do servidor." } );
         }
 
-        return View(new ClinicaInfoViewModel { Clinica = clinica, Horarios = horarios });
+        return View(model);
 
     }
 
@@ -61,17 +48,23 @@ public class HomeController(ApplicationDbContext db) : Controller
     public async Task<IActionResult> State(string estado)
     {
         
-        Clinicas[] clinicas = await _db.Clinicas
-        .Include(clinica => clinica.obj_cep_location)
-        .Where(clinica => clinica.obj_cep_location.estado.ToLower() == estado.ToLower())
-        .ToArrayAsync();
-
-        if (clinicas.Length == 0)
+        var response = await client.GetAsync($"/api/info/state_info/{estado}");
+        if (! response.IsSuccessStatusCode)
         {
-            return NotFound( new { message = $"Estado < {estado} > encontrado" } );
+            return (IActionResult)Results.InternalServerError(new { message =  "Não foi possivel obter informações do estado especificado"});
         }
 
-        return View( new StateInfoViewModel { Estado = estado, ListaDeClinicas = clinicas } );
+        StateInfoViewModel? model = JsonSerializer.Deserialize<StateInfoViewModel>(
+            await response.Content.ReadAsStringAsync(),
+            jsonOptions
+        );
+
+        if (model == null)
+        {
+            return (IActionResult)Results.InternalServerError( new { message = "Não foi possivel deserializar a resposta obtida do servidor." } );
+        }
+
+        return View(model);
 
     }
 }

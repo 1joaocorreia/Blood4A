@@ -77,7 +77,7 @@ async function carregar_clinicas() {
         }
 
         const json = await response.json();
-        const json_data = json.clinicas_por_estado;
+        const json_data = json.clinicasEstado;
 
         if (!json_data || json_data.length == 0) {
 

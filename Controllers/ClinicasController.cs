@@ -6,16 +6,16 @@ namespace Blood4A.Controllers
 {
     public class ClinicasController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
 
         public ClinicasController(ApplicationDbContext context)
         {
-            _context = context;
+            _db = context;
         }
 
         public IActionResult Index()
         {
-            var clinicas = _context.Clinicas.ToList();
+            var clinicas = _db.Clinicas.ToList();
             return View(clinicas);
         }
     }

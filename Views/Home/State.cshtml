@@ -4,9 +4,14 @@
 
 @model StateInfoViewModel;
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/home/state.css">
+}
+
 <div class="main">
     <div class="header">
         <h1>@Model.Estado</h1>
+        <a class="btn btn-primary" href="/api/export/state/@Model.Estado">Export to PDF</a>
     </div>
     <div class="content">
         <h1 style="font-size: 30px;">Clinicas localizadas neste estado:</h1>

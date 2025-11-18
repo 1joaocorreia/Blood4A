@@ -25,16 +25,30 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         }
 
         var horarios = await _db.AberturaFechamento
-        .Where(horario => horario.referente_a == clinic_id)
-        .ToArrayAsync();
+            .Where(horario => horario.referente_a == clinic_id)
+            .ToArrayAsync();
 
-        var model = new ClinicaInfoViewModel()
+        if (horarios.Length != 0)
         {
+            var ordem = new Dictionary<string, int>
+            {
+                ["segunda feira"] = 1,
+                ["terca feira"] = 2,
+                ["terça feira"] = 2,
+                ["quarta feira"] = 3,
+                ["quinta feira"] = 4,
+                ["sexta feira"] = 5,
+            };
+
+            horarios = horarios.OrderBy(
+                x => ordem[x.dia_da_semana.Trim().ToLower()]
+            ).ToArray();
+        }
+        
+        return Ok(new ClinicaInfoViewModel() {
             Clinica = specific_clinic,
             Horarios = horarios.ToArray()
-        };
-        
-        return Ok(model);
+        });
     }
 
     [HttpGet("clinic_donations/{clinic_id}")]
@@ -76,6 +90,19 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         }
 
         return Ok( new ClinicaDonationsViewModel { DoacoesPorMes = doacoes_por_meses, ClinicaAlvo = target_clinica} );
+
+    }
+
+    [HttpGet("state_info/{estado}")]
+    public async Task<IActionResult> GetStateInfo(string estado)
+    {
+
+        Clinicas[] clinicas = await _db.Clinicas
+            .Include(clinica => clinica.obj_cep_location)
+            .Where(clinica => clinica.obj_cep_location.estado.ToLower() == estado.ToLower())
+            .ToArrayAsync();
+        
+        return Ok( new StateInfoViewModel() { Estado = estado, ListaDeClinicas = clinicas }  );
 
     }
 
@@ -124,18 +151,15 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
         List<ClinicasEstado> clinicas_por_estado = new List<ClinicasEstado>();
 
         Clinicas[] all_clinics = await _db.Clinicas
-        .Include(clinic => clinic.obj_cep_location)
-        .ToArrayAsync();
-
-        int all_clinics_length = all_clinics.Length;
+            .Include(clinic => clinic.obj_cep_location)
+            .ToArrayAsync();
         
-        if (all_clinics_length == 0)
+        if (all_clinics.Length == 0)
         {
-            return NotFound("Nenhuma clinica encontrada");
+            return NotFound( new { message = "Nenhuma clinica encontrada" } );
         }
-
         
-        for (int i = 0; i < all_clinics_length; i++)
+        for (int i = 0; i < all_clinics.Length; i++)
         {
             Clinicas current_clinic = all_clinics[i];
             if (current_clinic.obj_cep_location == null)
@@ -161,7 +185,7 @@ public class InfoController(ApplicationDbContext db) : ControllerBase
             }
         }
 
-        return Ok( new { clinicas_por_estado } );
+        return Ok( new AllClinicsViewModel() { ClinicasEstado = clinicas_por_estado.ToArray() } );
 
     }
 

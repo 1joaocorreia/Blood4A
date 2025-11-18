@@ -4,9 +4,15 @@
 
 @model ClinicaInfoViewModel;
 
+@section Styles
+{
+    <link rel="stylesheet" href="~/css/home/clinic.css">
+}
+
 <div class="main">
     <div class="header">
         <h1 id="clinic_title">@Model.Clinica.nome_clinica</h1>
+        <a class="btn btn-primary" href="/api/export/clinic/@Model.Clinica.id_clinica">Export to PDF</a>
     </div>
     <div class="content">
         <div class="horarios">
