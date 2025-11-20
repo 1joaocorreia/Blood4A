@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Blood4A.Models;
 using System.Diagnostics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Blood4A.Controllers;
 
-[Route("[controller]")]
+[Route("auth")]
 public class AuthController(ILogger<AuthController> logger) : Controller
 {
     private readonly ILogger<AuthController> _logger = logger;
@@ -12,23 +15,51 @@ public class AuthController(ILogger<AuthController> logger) : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return RedirectToAction("Login", "Auth");
+        return RedirectToAction("login", "auth");
     }
 
-    [HttpGet("Login/")]
+    [HttpGet("login")]
     public IActionResult Login()
     {
+        if (User.Identity.IsAuthenticated)
+        {
+            return RedirectToAction("index", "home");
+        }
         return View();
     }
 
-    [HttpPost("Login/")]
-    public IActionResult Login(LoginViewModel model)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
         if (ModelState.IsValid)
         {
             if (model.Login.Equals("admin@hotmail.com", StringComparison.CurrentCultureIgnoreCase) && model.Password.Equals("admin", StringComparison.CurrentCultureIgnoreCase))
             {
-                return RedirectToAction("Index", "Home");
+                
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, model.Login),
+                    new Claim(ClaimTypes.Role, "User")
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme
+                );
+
+                var authProperties = new AuthenticationProperties()
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                };
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties
+                );
+
+                return RedirectToAction("index", "home");
+
             }
         }
         return View();

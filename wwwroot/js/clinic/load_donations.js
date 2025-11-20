@@ -1,6 +1,6 @@
 const host = "localhost"
-const port = 5213
-const rootaddress = `http://${host}:${port}`
+const port = 7298
+const rootaddress = `https://${host}:${port}`
 
 function generate_bootstrap_error_card(message) {
     return `

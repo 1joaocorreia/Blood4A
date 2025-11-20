@@ -1,39 +1,28 @@
 using System.Text.Json;
 using Blood4A.Infrastructure;
 using Blood4A.Models;
+using Blood4A.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blood4A.Controllers;
 
-[Route("[controller]")]
-public class HomeController(ApplicationDbContext db) : Controller
+[Route("home")]
+[Authorize]
+public class HomeController(InformationService info) : Controller
 {
-    private readonly ApplicationDbContext _db = db;
-    private readonly HttpClient client = new HttpClient() { BaseAddress = new Uri("http://localhost:5213") };
-    private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    private readonly InformationService _info = info;
 
     [HttpGet]
     public IActionResult Index()
-    {
-        
+    {   
         return View();
-
     }
     
     [HttpGet("clinic/{clinic_id}")]
     public async Task<IActionResult> Clinic(int clinic_id)
     {
-
-        var response = await client.GetAsync($"/api/info/clinic_data/{clinic_id}");
-        if (! response.IsSuccessStatusCode)
-        {
-            return (IActionResult)Results.InternalServerError(new { message =  "Não foi possivel obter os dados da clinica especificada"});
-        }
-
-        ClinicaInfoViewModel? model = JsonSerializer.Deserialize<ClinicaInfoViewModel>(
-            await response.Content.ReadAsStringAsync(),
-            jsonOptions
-        );
+        ClinicaInfoViewModel? model = await _info.GetClinicData(clinic_id);
 
         if (model == null)
         {
@@ -41,23 +30,12 @@ public class HomeController(ApplicationDbContext db) : Controller
         }
 
         return View(model);
-
     }
 
     [HttpGet("state/{estado}")]
     public async Task<IActionResult> State(string estado)
     {
-        
-        var response = await client.GetAsync($"/api/info/state_info/{estado}");
-        if (! response.IsSuccessStatusCode)
-        {
-            return (IActionResult)Results.InternalServerError(new { message =  "Não foi possivel obter informações do estado especificado"});
-        }
-
-        StateInfoViewModel? model = JsonSerializer.Deserialize<StateInfoViewModel>(
-            await response.Content.ReadAsStringAsync(),
-            jsonOptions
-        );
+        StateInfoViewModel? model = await _info.GetStateInfo(estado);
 
         if (model == null)
         {
@@ -65,6 +43,5 @@ public class HomeController(ApplicationDbContext db) : Controller
         }
 
         return View(model);
-
     }
 }

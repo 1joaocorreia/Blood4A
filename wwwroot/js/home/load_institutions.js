@@ -1,6 +1,6 @@
 const host = "localhost"
-const port = 5213
-const rootaddress = `http://${host}:${port}`
+const port = 7298
+const rootaddress = `https://${host}:${port}`
 
 class _cLocation {
     constructor(cep, logradouro, bairro, cidade, estado, uf) {
@@ -48,7 +48,7 @@ function create_new_clinic_card(clinica_obj) {
                 Localizaco em: ${clinica_obj.cep_location.bairro}, ${clinica_obj.cep_location.cidade}, ${clinica_obj.cep_location.estado}.
             </div>
             <div class="right">
-                <a class="btn btn-secondary" href="/Home/Clinic/${clinica_obj.id_clinica}">MAIS INFORMAÇÕES</a>
+                <a class="btn btn-secondary" href="/home/clinic/${clinica_obj.id_clinica}">MAIS INFORMAÇÕES</a>
             </div>
         </div>
     `

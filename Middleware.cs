@@ -11,8 +11,12 @@ public class RedirectMiddleware
     {
         if (context.Request.Path == "/" || string.IsNullOrEmpty(context.Request.Path.Value))
         {
-            context.Response.Redirect("Auth/Login");
+            context.Response.Redirect("/auth/login");
             return;
+        }
+        if (context.Request.Path == "/auth")
+        {
+            context.Response.Redirect("/auth/login");
         }
 
         await _next(context);

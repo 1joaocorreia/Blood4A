@@ -13,14 +13,21 @@ public interface IPdfService<T>
 };
 
 
-public class PdfClinicService : IPdfService<Clinicas>
+public class PdfClinicService(InformationService info) : IPdfService<int>
 {
 
-    private readonly HttpClient client = new HttpClient { BaseAddress = new Uri("http://localhost:5213") };
-    private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    private readonly InformationService _info = info;
 
-    public async Task<byte[]> GeneratePdf(Clinicas Clinica)
+    public async Task<byte[]> GeneratePdf(int clinic_id)
     {
+
+        ClinicaInfoViewModel? clinica_info = await _info.GetClinicData(clinic_id);
+        ClinicaDonationsViewModel? clinica_donations = await _info.GetClinicDonationsData(clinic_id);
+        
+        if (clinica_info == null)
+        {
+            return [];
+        }
 
         using var ms = new MemoryStream();
         var writer = new PdfWriter(ms);
@@ -31,38 +38,34 @@ public class PdfClinicService : IPdfService<Clinicas>
 
         doc.Add(new Paragraph("Relatório da Instituição").SetFontSize(18));
         
-        doc.Add(new Paragraph($"NOME: {Clinica.nome_clinica}"));
-        doc.Add(new Paragraph($"CNPJ: {Clinica.cnpj_clinica}"));
-        if (Clinica.obj_cep_location != null)
+        doc.Add(new Paragraph($"NOME: {clinica_info.Clinica.nome_clinica}"));
+        doc.Add(new Paragraph($"CNPJ: {clinica_info.Clinica.cnpj_clinica}"));
+        if (clinica_info.Clinica.obj_cep_location != null)
         {
             doc.Add(new Paragraph("Localização da Instituição")
                 .SetFontSize(18));
-            doc.Add(new Paragraph($"CEP: {Clinica.obj_cep_location.cep}"));
-            doc.Add(new Paragraph($"LOGRADOURO: {Clinica.obj_cep_location.logradouro}"));
-            doc.Add(new Paragraph($"BAIRRO: {Clinica.obj_cep_location.bairro}"));
-            doc.Add(new Paragraph($"CIDADE: {Clinica.obj_cep_location.cidade}"));
-            doc.Add(new Paragraph($"ESTADO: {Clinica.obj_cep_location.estado}"));
-            doc.Add(new Paragraph($"UF: {Clinica.obj_cep_location.uf}"));
+            doc.Add(new Paragraph($"CEP: {clinica_info.Clinica.obj_cep_location.cep}"));
+            doc.Add(new Paragraph($"LOGRADOURO: {clinica_info.Clinica.obj_cep_location.logradouro}"));
+            doc.Add(new Paragraph($"BAIRRO: {clinica_info.Clinica.obj_cep_location.bairro}"));
+            doc.Add(new Paragraph($"CIDADE: {clinica_info.Clinica.obj_cep_location.cidade}"));
+            doc.Add(new Paragraph($"ESTADO: {clinica_info.Clinica.obj_cep_location.estado}"));
+            doc.Add(new Paragraph($"UF: {clinica_info.Clinica.obj_cep_location.uf}"));
         }
 
-        var donations_response = await client.GetAsync($"/api/info/clinic_donations/{Clinica.id_clinica}");
-        if (donations_response.IsSuccessStatusCode)
+        
+        if (clinica_donations == null)
         {
-            var text_data = await donations_response.Content.ReadAsStringAsync();
-            ClinicaDonationsViewModel? json_data = JsonSerializer.Deserialize<ClinicaDonationsViewModel>(text_data, jsonOptions);
-            if (json_data == null)
+            doc.Add(new Paragraph("Não foi possivel carregar os dados de doações desta clínica especifica "));
+        } else
+        {
+            doc.Add(new Paragraph("Numero de Doações Mensais: ").SetFontSize(18));
+            
+            foreach (var doacao_por_mes in clinica_donations.DoacoesPorMes)
             {
-                doc.Add(new Paragraph("Não foi possivel carregar os dados de doações desta clínica especifica "));
-            } else
-            {
-                doc.Add(new Paragraph("Numero de Doações Mensais: ").SetFontSize(18));
-                
-                foreach (var doacao_por_mes in json_data.DoacoesPorMes)
-                {
-                    doc.Add(new Paragraph($"Mês de {doacao_por_mes.Mes}: {doacao_por_mes.QuantidadeDeDoacoes} doações"));
-                }
+                doc.Add(new Paragraph($"Mês de {doacao_por_mes.Mes}: {doacao_por_mes.QuantidadeDeDoacoes} doações"));
             }
         }
+        
 
         doc.Add(new Paragraph("\n--- Fim do relatório ---"));
 
@@ -72,20 +75,21 @@ public class PdfClinicService : IPdfService<Clinicas>
     }
 }
 
-public class PdfStateService : IPdfService<string>
+public class PdfStateService(InformationService info) : IPdfService<string>
 {
-    private readonly HttpClient client = new HttpClient { BaseAddress = new Uri("http://localhost:5213") };
-    private readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-    public async Task<byte[]> GeneratePdf(string estado)
+
+    private readonly InformationService _info = info;
+
+    public async Task<byte[]> GeneratePdf(string state)
     {
-        var response = await client.GetAsync($"/api/info/state_donations/{estado}");
-        if (! response.IsSuccessStatusCode)
+        StateInfoViewModel? state_info = await _info.GetStateInfo(state);
+        if (state_info == null)
         {
             return [];
         }
-
-        StateDonationsViewModel? state_donations_json_data = JsonSerializer.Deserialize<StateDonationsViewModel>(await response.Content.ReadAsStringAsync(), jsonOptions);
-        if (state_donations_json_data == null)
+        
+        StateDonationsViewModel? state_donations = await _info.GetStateDonations(state);
+        if (state_donations == null)
         {
             return [];
         }
@@ -99,52 +103,42 @@ public class PdfStateService : IPdfService<string>
 
         doc.Add(new Paragraph("Relatório sobre Estado").SetFontSize(18));
 
-        doc.Add(new Paragraph($"NOME: {state_donations_json_data.Estado}"));
+        doc.Add(new Paragraph($"NOME: {state_donations.Estado}"));
         
         doc.Add(new Paragraph("Quantidade de Doações Mensais").SetFontSize(18));
         
-        foreach (var doacao_mes in state_donations_json_data.DoacoesPorMes)
+        foreach (var doacao_mes in state_donations.DoacoesPorMes)
         {
             doc.Add(new Paragraph($"Mes de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes} doações"));
         }
+        
+        foreach (var clinica in state_info.ListaDeClinicas)
+        {
+            doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
+            doc.Add(new Paragraph($"Clinica {clinica.nome_clinica}").SetFontSize(18));
+            doc.Add(new Paragraph($"CNPJ: {clinica.cnpj_clinica}"));
+            if (clinica.obj_cep_location != null) {
+                doc.Add(new Paragraph($"Localização").SetFontSize(18));
+                doc.Add(new Paragraph($"CEP: {clinica.obj_cep_location.cep}"));
+                doc.Add(new Paragraph($"LOGRADOURO: {clinica.obj_cep_location.logradouro}"));
+                doc.Add(new Paragraph($"BAIRRO: {clinica.obj_cep_location.bairro}"));
+                doc.Add(new Paragraph($"CIDADE: {clinica.obj_cep_location.cidade}"));
+                doc.Add(new Paragraph($"ESTADO: {clinica.obj_cep_location.estado}"));
+                doc.Add(new Paragraph($"UF: {clinica.obj_cep_location.uf}"));
+            }
 
-        response = await client.GetAsync($"/api/info/state_info/{estado}");
-        if (response.IsSuccessStatusCode) {
-            StateInfoViewModel? state_info_json_data = JsonSerializer.Deserialize<StateInfoViewModel>(await response.Content.ReadAsStringAsync(), jsonOptions);
-            if (state_info_json_data != null && state_info_json_data.ListaDeClinicas.Length > 0)
+            ClinicaDonationsViewModel? clinica_donations = await _info.GetClinicDonationsData(clinica.id_clinica);
+            if (clinica_donations != null)
             {
-                foreach (var clinica in state_info_json_data.ListaDeClinicas)
+                doc.Add(new Paragraph("Quantidade de Doações").SetFontSize(18));
+                foreach (var doacao_mes in clinica_donations.DoacoesPorMes)
                 {
-                    doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
-                    doc.Add(new Paragraph($"Clinica {clinica.nome_clinica}").SetFontSize(18));
-                    doc.Add(new Paragraph($"CNPJ: {clinica.cnpj_clinica}"));
-                    if (clinica.obj_cep_location != null) {
-                        doc.Add(new Paragraph($"Localização").SetFontSize(18));
-                        doc.Add(new Paragraph($"CEP: {clinica.obj_cep_location.cep}"));
-                        doc.Add(new Paragraph($"LOGRADOURO: {clinica.obj_cep_location.logradouro}"));
-                        doc.Add(new Paragraph($"BAIRRO: {clinica.obj_cep_location.bairro}"));
-                        doc.Add(new Paragraph($"CIDADE: {clinica.obj_cep_location.cidade}"));
-                        doc.Add(new Paragraph($"ESTADO: {clinica.obj_cep_location.estado}"));
-                        doc.Add(new Paragraph($"UF: {clinica.obj_cep_location.uf}"));
-                    }
-
-                    response = await client.GetAsync($"/api/info/clinic_donations/{clinica.id_clinica}");
-                    if (response.IsSuccessStatusCode)
-                    {
-                        ClinicaDonationsViewModel? clinica_donations_json_data = JsonSerializer.Deserialize<ClinicaDonationsViewModel>(await response.Content.ReadAsStringAsync(), jsonOptions);
-                        if (clinica_donations_json_data != null)
-                        {
-                            doc.Add(new Paragraph("Quantidade de Doações").SetFontSize(18));
-                            foreach (var doacao_mes in clinica_donations_json_data.DoacoesPorMes)
-                            {
-                                doc.Add(new Paragraph($"Mês de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes}"));
-                            }
-                        }
-                    }
+                    doc.Add(new Paragraph($"Mês de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes}"));
                 }
             }
+            
         }
-
+        
         doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.LAST_PAGE));
 
         doc.Add(new Paragraph("\n--- Fim do relatório ---"));
