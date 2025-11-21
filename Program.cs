@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Blood4A.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Blood4A.Services;
-using Blood4A.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +10,7 @@ builder.Services.AddControllersWithViews(options => {
 	options.Filters.Add(new RequireHttpsAttribute());
 });
 
-string? connectionString = builder.Configuration["Blood4A:ConnectionString"];
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (connectionString == null)
 {
@@ -36,15 +35,6 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseMiddleware<RedirectMiddleware>();
-
-
-// 🔹 Chamada ao SeedData
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
-}
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,0 +1,64 @@
+CREATE TABLE Localizacoes(
+    cep TEXT PRIMARY KEY,
+    logradouro TEXT,
+    bairro TEXT NOT NULL,
+    cidade TEXT NOT NULL,
+    estado TEXT NOT NULL,
+    uf INTEGER
+);
+
+CREATE TABLE Agentes (
+    id_agente INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_agente TEXT NOT NULL,
+    cnpj_agente TEXT NOT NULL,
+    email_agente TEXT NOT NULL,
+    senha_agente TEXT NOT NULL
+);
+
+CREATE TABLE Clinicas(
+    id_clinica INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_clinica TEXT NOT NULL,
+    cnpj_clinica TEXT NOT NULL,
+    cep_location TEXT,
+    FOREIGN KEY (cep_location) REFERENCES Localizacoes(cep)
+);
+
+CREATE TABLE AberturaFechamento(
+    referente_a INTEGER NOT NULL,
+    horario_abertura TEXT NOT NULL,
+    horario_fechamento TEXT NOT NULL,
+    dia_da_semana TEXT NOT NULL,
+    FOREIGN KEY (referente_a) REFERENCES Clinicas(id_clinica),
+    PRIMARY KEY (referente_a, dia_da_semana) 
+);
+
+CREATE TABLE Escolaridade (
+    id_escolaridade INTEGER PRIMARY KEY AUTOINCREMENT,
+    grau_escolaridade TEXT,
+    descricao_escolaridade TEXT
+);
+
+CREATE TABLE Doadores (
+    id_doador INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_doador TEXT,
+    data_nascimento_doador TEXT,
+    cpf_doador TEXT,
+    telefone_doador TEXT,
+    tipo_sanguineo_doador TEXT,
+    cep_location TEXT,
+    id_escolaridade INTEGER,
+    FOREIGN KEY (cep_location) REFERENCES Localizacoes(cep),
+    FOREIGN KEY (id_escolaridade) REFERENCES Escolaridade(id_escolaridade)
+);
+
+CREATE TABLE Doacoes (
+    id_doacao INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_agente INTEGER,
+    id_doador INTEGER,
+    id_clinica INTEGER,
+    data_doacao TEXT,
+    hora_doacao TEXT,
+    FOREIGN KEY (id_agente) REFERENCES Agentes(id_agente),
+    FOREIGN KEY (id_doador) REFERENCES Doadores(id_doador),
+    FOREIGN KEY (id_clinica) REFERENCES Clinicas(id_clinica)
+);
