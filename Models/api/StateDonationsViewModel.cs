@@ -1,7 +1,6 @@
 using Blood4A.Models;
 
-public class StateDonationsViewModel ()
+public class StateDonationsViewModel : DonationsViewModel
 {
     public required string Estado {get; set;}
-    public required DoacaoMes[] DoacoesPorMes {get; set;}
 }

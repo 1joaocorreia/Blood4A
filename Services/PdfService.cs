@@ -1,9 +1,8 @@
-using Blood4A.Domain;
 using Blood4A.Models;
+using iText.IO.Image;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using System.Text.Json;
 
 namespace Blood4A.Services;
 
@@ -57,13 +56,18 @@ public class PdfClinicService(InformationService info) : IPdfService<int>
         {
             doc.Add(new Paragraph("Não foi possivel carregar os dados de doações desta clínica especifica "));
         } else
-        {
-            doc.Add(new Paragraph("Numero de Doações Mensais: ").SetFontSize(18));
-            
-            foreach (var doacao_por_mes in clinica_donations.DoacoesPorMes)
+        {            
+            doc.Add(new Paragraph("Quantidade Mensal de Doações").SetFontSize(18));
+
+            foreach (var doacao_mes in clinica_donations.DoacoesPorMes)
             {
-                doc.Add(new Paragraph($"Mês de {doacao_por_mes.Mes}: {doacao_por_mes.QuantidadeDeDoacoes} doações"));
+                doc.Add(new Paragraph($"Mês de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes}"));
             }
+
+            byte[] generated_chart = new MonthlyDonationsChartService().GenerateMemoryPngFor(clinica_donations);
+            doc.Add(new Image(ImageDataFactory.CreatePng(generated_chart)));
+
+            doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
         }
         
 
@@ -103,7 +107,7 @@ public class PdfStateService(InformationService info) : IPdfService<string>
 
         doc.Add(new Paragraph("Relatório sobre Estado").SetFontSize(18));
 
-        doc.Add(new Paragraph($"NOME: {state_donations.Estado}"));
+        doc.Add(new Paragraph($"{state_donations.Estado}"));
         
         doc.Add(new Paragraph("Quantidade de Doações Mensais").SetFontSize(18));
         
@@ -111,7 +115,11 @@ public class PdfStateService(InformationService info) : IPdfService<string>
         {
             doc.Add(new Paragraph($"Mes de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes} doações"));
         }
-        
+
+        byte[] generated_chart = new MonthlyDonationsChartService().GenerateMemoryPngFor(state_donations);
+
+        doc.Add(new Image(ImageDataFactory.CreatePng(generated_chart)));
+
         foreach (var clinica in state_info.ListaDeClinicas)
         {
             doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
@@ -130,16 +138,18 @@ public class PdfStateService(InformationService info) : IPdfService<string>
             ClinicaDonationsViewModel? clinica_donations = await _info.GetClinicDonationsData(clinica.id_clinica);
             if (clinica_donations != null)
             {
-                doc.Add(new Paragraph("Quantidade de Doações").SetFontSize(18));
+                doc.Add(new Paragraph("Quantidade Mensal de Doações").SetFontSize(18));
                 foreach (var doacao_mes in clinica_donations.DoacoesPorMes)
                 {
                     doc.Add(new Paragraph($"Mês de {doacao_mes.Mes}: {doacao_mes.QuantidadeDeDoacoes}"));
                 }
+                generated_chart = new MonthlyDonationsChartService().GenerateMemoryPngFor(clinica_donations);
+                doc.Add(new Image(ImageDataFactory.CreatePng(generated_chart)));
             }
             
         }
         
-        doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.LAST_PAGE));
+        doc.Add(new AreaBreak(iText.Layout.Properties.AreaBreakType.NEXT_PAGE));
 
         doc.Add(new Paragraph("\n--- Fim do relatório ---"));
 
