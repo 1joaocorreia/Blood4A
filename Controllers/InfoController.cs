@@ -26,6 +26,20 @@ public class InfoController(InformationService info) : ControllerBase
         return Ok(model);
     }
 
+    [HttpGet("clinic_goals/{clinic_id}")]
+    public async Task<IActionResult> GetClinicGoals(int clinic_id)
+    {
+        MetasClinica[] clinicGoals = await _info.GetClinicGoals(clinic_id);
+
+        if (clinicGoals.Length == 0)
+        {
+            return NotFound(new { message = "Nenhuma meta encontrada para a clínica especificada" });
+        }
+
+        return Ok(clinicGoals);
+
+    }
+
     [HttpGet("state_donations/{state}")]
     public async Task<IActionResult> GetStateDonations(string state)
     {
@@ -37,6 +51,19 @@ public class InfoController(InformationService info) : ControllerBase
         }
 
         return Ok(model);
+    }
+
+    [HttpGet("state_goals/{state}")]
+    public async Task<IActionResult> GetStateGoals(string state)
+    {
+        MetasEstado[] stateGoals = await _info.GetStateGoals(state);
+
+        if (stateGoals.Length == 0)
+        {
+            return NotFound(new { message = "Nenhuma meta encontrada para o estado especificado" });
+        }
+
+        return Ok(stateGoals);
     }
 
     [HttpGet("get_all_clinics")]

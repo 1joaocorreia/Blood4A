@@ -62,3 +62,17 @@ CREATE TABLE Doacoes (
     FOREIGN KEY (id_doador) REFERENCES Doadores(id_doador),
     FOREIGN KEY (id_clinica) REFERENCES Clinicas(id_clinica)
 );
+
+CREATE TABLE MetasEstado (
+	id_meta INTEGER PRIMARY KEY AUTOINCREMENT,
+	referente_a TEXT,
+	condicao TEXT,
+	FOREIGN KEY (referente_a) REFERENCES Localizacoes(estado)
+);
+
+CREATE TABLE MetasClinica (
+	id_meta INTEGER PRIMARY KEY AUTOINCREMENT,
+	referente_a INTEGER,
+	condicao TEXT,
+	FOREIGN KEY (referente_a) REFERENCES Clinicas(id_clinica)
+);
