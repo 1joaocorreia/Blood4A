@@ -1,7 +1,3 @@
-const host = "localhost"
-const port = 7298
-const rootaddress = `https://${host}:${port}`
-
 class _cLocation {
     constructor(cep, logradouro, bairro, cidade, estado, uf) {
         this.cep = cep;

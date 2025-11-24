@@ -93,6 +93,14 @@ public class InformationService
 
     }
 
+    public async Task<MetasClinica[]> GetClinicGoals(int clinic_id)
+    {
+        MetasClinica[] goals = await _db.MetasClinica
+            .Where(goal => goal.referente_a == clinic_id)
+            .ToArrayAsync();
+
+        return goals;
+    }
     public async Task<StateInfoViewModel> GetStateInfo(string estado)
     {
         Clinicas[] clinicas = await _db.Clinicas
@@ -138,6 +146,15 @@ public class InformationService
         }
 
         return new StateDonationsViewModel { Estado = estado, DoacoesPorMes = doacoes_por_mes };
+    }
+
+    public async Task<MetasEstado[]> GetStateGoals(string estado)
+    {
+        MetasEstado[] goals = await _db.MetasEstado
+            .Where(goal => goal.referente_a.ToLower() == estado.ToLower())
+            .ToArrayAsync();
+
+        return goals;
     }
 
     public async Task<AllClinicsViewModel?> GetAllClinics()

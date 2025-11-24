@@ -21,5 +21,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Doadores> Doadores { get; set; }
     public DbSet<Escolaridade> Escolaridade { get; set; }
     public DbSet<Localizacoes> Localizacoes { get; set; }
+    public DbSet<MetasClinica> MetasClinica {get; set;}
+    public DbSet<MetasEstado> MetasEstado {get; set;}
 
 }

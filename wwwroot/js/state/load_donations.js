@@ -1,7 +1,3 @@
-const host = "localhost"
-const port = 7298
-const rootaddress = `https://${host}:${port}`
-
 function generate_bootstrap_error_card(message) {
     return `
         <div class="card text-center text-white bg-danger" style="width: 100%;">
@@ -27,18 +23,7 @@ async function carregar_grafico() {
     const segments = current_url.split("/");
     const estado = segments[segments.length - 1];
 
-    const endpoint = `${rootaddress}/api/info/state_donations/${estado}`;
-
-    const response = await fetch(endpoint);
-    if (! response.ok) {
-        $("canvas#donations_chart").remove();
-        $("div.donation_statistics").append(generate_bootstrap_error_card(
-            "Ocorreu um erro ao requisitar os dados de doação deste estado! Tente novamente mais tarde"
-        ));
-        return;
-    }
-
-    const json = await response.json();
+    const json = await request_state_donations(estado)
 
     let chart_data = []
     json.doacoesPorMes.forEach(doacao_mes => {
